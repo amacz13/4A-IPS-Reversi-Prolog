@@ -1,0 +1,1 @@
+# 4A-IPS-Reversi-Prolog
