@@ -66,4 +66,35 @@ coupValide(Grille, Coord, Camp):-
     succCol(Ncol, NcolSuiv).*/
 
 /* Vérifie qu'il y a un changement */
-changementPion(Ligne, Camp).
+changementPion([X|_], Camp):- campAdv(Camp, X).
+changementPion([Camp|Ligne], Camp):- changementPion(Ligne, Camp).
+
+/* Récupère la liste des cases suivant la direction donnée par les deux premières coordonnées */
+getListeDepl([X,Y1], [X,Y2], L):-
+    Y2>Y1, getColonneHB([X|Y2], L);
+    Y2<Y1, getColonneBH([X|Y2], L).
+getListeDepl([X1,Y], [X2,Y], L):-
+    X2>X1, getLigneGD([X2|Y], L);
+    X2<X1, getLigneDG([X2|Y], L).
+getListeDepl([X1,Y1], [X2,Y2], L):-
+    X2>X1, Y2>Y1, getDiagonaleGDHB([X2|Y2], L);
+    X2<X1, Y2>Y1, getDiagonaleDGHB([X2|Y2], L);
+    X2>X1, Y2<Y1, getDiagonaleGDBH([X2|Y2], L);
+    X2<X1, Y2<Y1, getDiagonaleDGBH([X2|Y2], L).
+
+getLigneGD([X|Y], [[X|Y]]):- not(succCol(X,_)).
+getLigneGD([X1|Y], [[X1|Y]|L]):- succCol(X1, X2), getLigneGD([X2|Y], L).
+getLigneDG([X|Y], [[X|Y]]):- not(succCol(_,X)).
+getLigneDG([X1|Y], [[X1|Y]|L]):- succCol(X2, X1), getLigneGD([X2|Y], L).
+getColonneHB([X|Y], [[X|Y]]):- not(succLigne(Y,_)).
+getColonneHB([X|Y1], [[X|Y1]|L]):- succLigne(Y1, Y2), getLigneGD([X|Y2], L).
+getColonneBH([X|Y], [[X|Y]]):- not(succLigne(_,X)).
+getColonneBH([X|Y1], [[X|Y1]|L]):- succLigne(Y2, Y1), getLigneGD([X|Y2], L).
+getDiagonaleGDHB([X|Y], [[X|Y]]):- not(succLigne(X,_)), not(succLigne(Y,_)).
+getDiagonaleGDHB([X1|Y1], [[X1|Y1]|L]):- succLigne(Y1, Y2), succCol(X1, X2), getLigneGD([X2|Y2], L).
+getDiagonaleGDBH([X|Y], [[X|Y]]):- not(succLigne(X,_)), not(succLigne(_,Y)).
+getDiagonaleGDBH([X1|Y1], [[X1|Y1]|L]):- succLigne(Y2, Y1), succCol(X1, X2), getLigneGD([X2|Y2], L).
+getDiagonaleDGHB([X|Y], [[X|Y]]):- not(succLigne(_,X)), not(succLigne(Y,_)).
+getDiagonaleDGHB([X1|Y1], [[X1|Y1]|L]):- succLigne(Y1, Y2), succCol(X2, X1), getLigneGD([X2|Y2], L).
+getDiagonaleDGBH([X|Y], [[X|Y]]):- not(succLigne(_, X)), not(succLigne(_,Y)).
+getDiagonaleDGBH([X1|Y1], [[X1|Y1]|L]):- succLigne(Y2, Y1), succCol(X2, X1), getLigneGD([X2|Y2], L).
