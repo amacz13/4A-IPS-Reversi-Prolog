@@ -33,7 +33,7 @@ afficheGrille([L1,L2,L3,L4,L5,L6,L7,L8]):- nl, afficheLigne(L1), nl, afficheLign
 saisieUnCoup(COL,LIG):- nl, write("Saisir colonne : "), nl, read(COL), nl, write("Saisir ligne : "), nl, read(LIG).
 
 /* fonctions de base */
-coordoneesOuListe(C,L,[C,L]).
+coordonneesOuListe(C,L,[C,L]).
 
 /* Récupération d'une case dans une ligne */
 caseDeLigne(a, [Case|_], Case).
@@ -55,17 +55,40 @@ caseDeGrille(NCol,NLigne,Grille,Case):-
 /* Liste Cases Jouables */
 
 listeCasesJouables(GRILLE,[],[]).
-listeCasesJouables(CAMP, GRILLE,[T|Q],LISTE):- listeCasesJouables(GRILLE,Q,LISTE), coordoneesOuListe(C,L,T),
+listeCasesJouables(CAMP, GRILLE,[T|Q],LISTE):- listeCasesJouables(GRILLE,Q,LISTE), coordonneesOuListe(C,L,T),
     caseDeGrille(C,L,GRILLE,CASE), CASE = -, coupValide(GRILLE,T,CAMP), LISTE = [LISTE|CASE].
 
-/* Trucs bizarres de Boubou */
-/* Still in dev
+/* Vérifie que le coup soit valide
+ * Le coup est considéré valide si la case donnée est vide et si au moins une case à côté est le début d'un alignement de pions
+ * du camp adverse se terminant sur un pion de notre propre camp
+ */
 coupValide(Grille, Coord, Camp):-
-    coordonneesOuListe(Ncol, NLigne, Coord),
-    caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup),
-    succCol(Ncol, NcolSuiv).*/
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(Ncol, NcolSuiv),
+    caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote), getListeDepl([Ncol|Nligne], [NcolSuiv|Nligne], L),
+    changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(NcolSuiv, Ncol),
+    caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote), getListeDepl([Ncol|Nligne], [NcolSuiv|Nligne], L),
+    changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(Ncol, NcolSuiv),
+    succLigne(Nligne, NligneSuiv), caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote),
+    getListeDepl([Ncol|Nligne], [NcolSuiv|NligneSuiv], L), changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(Ncol, NcolSuiv),
+    succLigne(NligneSuiv, Nligne), caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote),
+    getListeDepl([Ncol|Nligne], [NcolSuiv|NligneSuiv], L), changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(NcolSuiv, Ncol),
+    succLigne(Nligne, NligneSuiv), caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote),
+    getListeDepl([Ncol|Nligne], [NcolSuiv|NligneSuiv], L), changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succCol(NcolSuiv, Ncol),
+    succLigne(NligneSuiv, Nligne), caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote),
+    getListeDepl([Ncol|Nligne], [NcolSuiv|NligneSuiv], L), changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succLigne(Nligne, NligneSuiv),
+    caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote), getListeDepl([Ncol|Nligne], [Ncol|NligneSuiv], L),
+    changementPion(L, CaseCote);
+    coordonneesOuListe(Ncol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CaseCoup), vide(CaseCoup), succLigne(NligneSuiv, Nligne),
+    caseDeGrille(Ncol, Nligne, Grille, CaseCote), campAdv(Camp, CaseCote), getListeDepl([Ncol|Nligne], [Ncol|NligneSuiv], L),
+    changementPion(L, CaseCote).
 
-/* Vérifie qu'il y a un changement */
+/* Vérifie qu'il y a un changement de camp dans un alignement de pions */
 changementPion([X|_], Camp):- campAdv(Camp, X).
 changementPion([Camp|Ligne], Camp):- changementPion(Ligne, Camp).
 
