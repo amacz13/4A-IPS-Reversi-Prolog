@@ -121,7 +121,7 @@ changerLigne(GrilleDepart, GrilleArrivee, [Coord|_], Camp):-
     coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, Camp).
 changerLigne(GrilleDepart, GrilleArrivee, [Coord|ListeDepl], Camp):-
     changerLigne(GrilleDepart, GrilleInter, ListeDepl, Camp),
-    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCom, NLigne, Grille, CampAdv), campAdv(Camp, CampAdv),
+    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CampAdv), campAdv(Camp, CampAdv),
     coupJoueDansGrille(Ncol, NLigne, Camp, GrilleInter, GrilleArrivee).
 
 
@@ -170,14 +170,19 @@ coupJoueDansLigne(C,VAL,[T|Q],[T|Q2]):- succCol(X,C), coupJoueDansLigne(X,VAL,Q,
 coupJoueDansGrille(C,1,VAL,[T|Q],[X|Q]):- coupJoueDansLigne(C,VAL,T,X).
 coupJoueDansGrille(C,L,VAL,[T|Q],[T|Q2]):- succLigne(X,L), coupJoueDansGrille(C,X,VAL,Q,Q2).
 
-joueLeCoup(GrilleDepart, Coord, Camp, GrilleArrivee):-
-    coupValide(GrilleDepart, Coord, Camp).
+joueLeCoup(GrilleDepart, [NCol, NLigne], Camp, GrilleArrivee):-
+    coupValide(GrilleDepart, [NCol, NLigne], Camp),
+    coupJoueDansGrille(NCol, NLigne, Camp, GrilleDepart, GrilleInter),
+    casesAvoisinantes([NCol, NLigne], CasesAvoisinantes),
+    joueCoupChangeCase(GrilleInter, GrilleArrivee, CasesAvoisinantes, [NCol, NLigne], Camp).
 
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [], Coord, Camp).
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp),
     caseDeGrille(NCol, NLigne, GrilleInter, CaseCoup), campAdv(CaseCoup, Camp),
-    getListeDepl(Coord, [NCol, NLigne], ListeDepl).
+    getListeDepl(Coord, [NCol, NLigne], ListeDepl),
+    verifChangementPion(GrilleInter, ListeDepl, Camp),
+    changerLigne(GrilleInter, GrilleArrivee, ListeDepl, Camp).
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp).
     
@@ -192,3 +197,38 @@ casesAvoisinantes([C,1],[C1,C2,C3,C4,C5]):- succCol(C,D), succCol(B,C), coordonn
 casesAvoisinantes([C,8],[C1,C2,C3,C4,C5]):- succCol(C,D), succCol(B,C), coordonneesOuListe(B,8,C1), coordonneesOuListe(B,7,C2), coordonneesOuListe(C,7,C3), coordonneesOuListe(D,7,C4), coordonneesOuListe(D,8,C5).
 
 casesAvoisinantes([C,L],[C1,C2,C3,C4,C5,C6,C7,C8]):- succLigne(L,M), succLigne(K,L), succCol(C,D), succCol(B,C), coordonneesOuListe(B,K,C1), coordonneesOuListe(C,K,C2), coordonneesOuListe(D,K,C3), coordonneesOuListe(B,L,C4), coordonneesOuListe(D,L,C5), coordonneesOuListe(B,M,C6), coordonneesOuListe(C,M,C7), coordonneesOuListe(D,M,C8).
+
+listeCasesVides([],[]).
+listeCasesVides([Ligne|Grille], ListeFinale):-
+    listeCasesVides(Grille, ListeDep),
+    videDansLigne(Ligne, ListeInter),
+    ListeFinale is [ListeInter|ListeDep].
+
+videDansLigne([], []).
+videDansLigne([[NCol,NLigne]|Ligne], [[NCol,NLigne]|Liste]):-
+    videDansLigne(Ligne, Liste),
+    caseDeGrille(NCol, NLigne, Grille, Case),
+    vide(Case).
+
+/*
+
+Compte Elements
+
+Compte le nombre de valeur T dans la grille [T|Q]
+
+*/
+compteElements([],0).
+compteElements([T|Q],T,N):- compteElements(Q,T,M), N = M+1.
+compteElements([T|Q],Z,N):- compteElements(Q,Z,N).
+
+/* Fin de Partie, CAMP est gagnant */
+moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
+
+/* Fin de Partie, CAMP est perdant */
+moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
+
+/* Fin de Partie, Egalité */
+moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
+
+/* Partie non terminée, CAMP ne peut pas jouer */
+moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L). 
