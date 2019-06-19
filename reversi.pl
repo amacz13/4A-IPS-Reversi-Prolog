@@ -54,10 +54,13 @@ caseDeGrille(NCol,NLigne,Grille,Case):-
     caseDeLigne(NCol, Ligne, Case).
 
 /* Liste Cases Jouables */
-
-listeCasesJouables(GRILLE,[],[]).
-listeCasesJouables(CAMP, GRILLE,[T|Q],LISTE):- listeCasesJouables(GRILLE,Q,LISTE), coordonneesOuListe(C,L,T),
-    caseDeGrille(C,L,GRILLE,CASE), CASE = -, coupValide(GRILLE,T,CAMP), LISTE = [LISTE|CASE].
+listeCasesJouables(_,_,[],[]).
+listeCasesJouables(Camp,Grille,[Coup|Liste1],[Coup|Liste2]):-
+    listeCasesJouables(Camp, Grille, Liste1, Liste2),
+    coordonneesOuListe(Ncol, Nligne, Coup), caseDeGrille(Ncol, Nligne, Grille, Case), vide(Case),
+    coupValide(Grille, Coup, Camp).
+listeCasesJouables(Camp,Grille,[Coup1|Liste1],Liste2):-
+    listeCasesJouables(Camp, Grille, Liste1, Liste2).
 
 /* Vérifie que le coup soit valide
  * Le coup est considéré valide si la case donnée est vide et si au moins une case à côté est le début d'un alignement de pions
@@ -122,3 +125,5 @@ getDiagonaleDGHB([X|Y], [[X|Y]]):- not(succLigne(_,X)), not(succLigne(Y,_)).
 getDiagonaleDGHB([X1|Y1], [[X1|Y1]|L]):- succLigne(Y1, Y2), succCol(X2, X1), getLigneGD([X2|Y2], L).
 getDiagonaleDGBH([X|Y], [[X|Y]]):- not(succLigne(_, X)), not(succLigne(_,Y)).
 getDiagonaleDGBH([X1|Y1], [[X1|Y1]|L]):- succLigne(Y2, Y1), succCol(X2, X1), getLigneGD([X2|Y2], L).
+
+toutesLesCasesDepart([[a,1],[b,1],[c,1],[d,1],[e,1],[f,1],[g,1],[h,1],[a,2],[b,2],[c,2],[d,2],[e,2],[f,2],[g,2],[h,2],[a,3],[b,3],[c,3],[d,3],[e,3],[f,3],[g,3],[h,3],[a,4],[b,4],[c,4],[d,4],[e,4],[f,4],[g,4],[h,4],[a,5],[b,5],[c,5],[d,5],[e,5],[f,5],[g,5],[h,5],[a,6],[b,6],[c,6],[d,6],[e,6],[f,6],[g,6],[h,6],[a,7],[b,7],[c,7],[d,7],[e,7],[f,7],[g,7],[h,7],[a,8],[b,8],[c,8],[d,8],[e,8],[f,8],[g,9],[h,9]]).
