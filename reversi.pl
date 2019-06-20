@@ -117,12 +117,12 @@ verifChangementPion(Grille, [X|Ligne], Camp):-
     verifChangementPion(Grille, Ligne, Camp).
 
 /* Change les valeurs des lignes de déplacements données pour le camp donné */
-changerLigne(GrilleDepart, GrilleArrivee, [Coord|_], Camp):- 
-    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, Camp).
+changerLigne(GrilleDepart, GrilleDepart, [Coord|_], Camp):- 
+    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, GrilleDepart, Camp).
 changerLigne(GrilleDepart, GrilleArrivee, [Coord|ListeDepl], Camp):-
     changerLigne(GrilleDepart, GrilleInter, ListeDepl, Camp),
-    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, Grille, CampAdv), campAdv(Camp, CampAdv),
-    coupJoueDansGrille(Ncol, NLigne, Camp, GrilleInter, GrilleArrivee).
+    coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, GrilleDepart, CampAdv), campAdv(Camp, CampAdv),
+    coupJoueDansGrille(NCol, NLigne, Camp, GrilleInter, GrilleArrivee).
 
 
 /* Récupère la liste des cases suivant la direction donnée par les deux premières coordonnées */
@@ -164,7 +164,7 @@ getDiagonaleDGBH([X1,Y1], [[X1,Y1]|L]):- succLigne(Y2, Y1), succCol(X2, X1), get
 
 toutesLesCasesDepart([[a,1],[b,1],[c,1],[d,1],[e,1],[f,1],[g,1],[h,1],[a,2],[b,2],[c,2],[d,2],[e,2],[f,2],[g,2],[h,2],[a,3],[b,3],[c,3],[d,3],[e,3],[f,3],[g,3],[h,3],[a,4],[b,4],[c,4],[d,4],[e,4],[f,4],[g,4],[h,4],[a,5],[b,5],[c,5],[d,5],[e,5],[f,5],[g,5],[h,5],[a,6],[b,6],[c,6],[d,6],[e,6],[f,6],[g,6],[h,6],[a,7],[b,7],[c,7],[d,7],[e,7],[f,7],[g,7],[h,7],[a,8],[b,8],[c,8],[d,8],[e,8],[f,8],[g,8],[h,8]]).
 
-coupJoueDansLigne(a,VAL,[-|Q],[VAL|Q]).
+coupJoueDansLigne(a,VAL,[_|Q],[VAL|Q]).
 coupJoueDansLigne(C,VAL,[T|Q],[T|Q2]):- succCol(X,C), coupJoueDansLigne(X,VAL,Q,Q2).
 
 coupJoueDansGrille(C,1,VAL,[T|Q],[X|Q]):- coupJoueDansLigne(C,VAL,T,X).
@@ -176,15 +176,15 @@ joueLeCoup(GrilleDepart, [NCol, NLigne], Camp, GrilleArrivee):-
     casesAvoisinantes([NCol, NLigne], CasesAvoisinantes),
     joueCoupChangeCase(GrilleInter, GrilleArrivee, CasesAvoisinantes, [NCol, NLigne], Camp).
 
-joueCoupChangeCase(GrilleDepart, GrilleDepart, [], Coord, Camp).
+joueCoupChangeCase(GrilleDepart, GrilleArrivee, [], Coord, Camp):- GrilleArrivee = GrilleDepart.
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp),
     caseDeGrille(NCol, NLigne, GrilleInter, CaseCoup), campAdv(CaseCoup, Camp),
     getListeDepl(Coord, [NCol, NLigne], ListeDepl),
     verifChangementPion(GrilleInter, ListeDepl, Camp),
-    changerLigne(GrilleInter, GrilleArrivee, ListeDepl, Camp).
-joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
-    joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp).
+    changerLigne(GrilleInter, GrilleArrivee, ListeDepl, Camp);
+    joueCoupChangeCase(GrilleDepart, GrilleArrivee, ListCases, Coord, Camp),
+    caseDeGrille(NCol, NLigne, GrilleArrivee, CaseCoup), not(campAdv(CaseCoup, Camp)).
     
 casesAvoisinantes([a,1],[[a,2],[b,2],[b,2]]).
 casesAvoisinantes([a,8],[[a,7],[b,7],[b,8]]). 
