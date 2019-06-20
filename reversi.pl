@@ -176,7 +176,7 @@ joueLeCoup(GrilleDepart, [NCol, NLigne], Camp, GrilleArrivee):-
     casesAvoisinantes([NCol, NLigne], CasesAvoisinantes),
     joueCoupChangeCase(GrilleInter, GrilleArrivee, CasesAvoisinantes, [NCol, NLigne], Camp).
 
-joueCoupChangeCase(GrilleDepart, GrilleArrivee, [], Coord, Camp).
+joueCoupChangeCase(GrilleDepart, GrilleDepart, [], Coord, Camp).
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp),
     caseDeGrille(NCol, NLigne, GrilleInter, CaseCoup), campAdv(CaseCoup, Camp),
