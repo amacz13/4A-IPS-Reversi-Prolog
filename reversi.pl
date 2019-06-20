@@ -176,6 +176,7 @@ joueLeCoup(GrilleDepart, [NCol, NLigne], Camp, GrilleArrivee):-
     casesAvoisinantes([NCol, NLigne], CasesAvoisinantes),
     joueCoupChangeCase(GrilleInter, GrilleArrivee, CasesAvoisinantes, [NCol, NLigne], Camp).
 
+/* Actual function */
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [], Coord, Camp):- GrilleArrivee = GrilleDepart.
 joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coord, Camp):-
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp),
@@ -183,6 +184,7 @@ joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coor
     getListeDepl(Coord, [NCol, NLigne], ListeDepl),
     verifChangementPion(GrilleInter, ListeDepl, Camp),
     changerLigne(GrilleInter, GrilleArrivee, ListeDepl, Camp);
+
     joueCoupChangeCase(GrilleDepart, GrilleArrivee, ListCases, Coord, Camp),
     caseDeGrille(NCol, NLigne, GrilleArrivee, CaseCoup), not(campAdv(CaseCoup, Camp)).
     
