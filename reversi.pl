@@ -235,18 +235,19 @@ moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,
 moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
-moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,[]), campAdv(CAMP,ADV), moteur(ARR,ADV). 
+moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer */
-moteur(GRILLE, CAMP):- nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
+moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
     coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer, Case Invalide */
-moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
+moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
     coordonneesOuListe(C,L,CASE), not(existeDansListe(CASE,LCASES)), moteur(GRILLE,CAMP).
 
 /* Run */
 run():-
     grilleDepart(Grille),
+    afficheGrille(Grille),
     joueur(Camp),
     moteur(Grille, Camp).
