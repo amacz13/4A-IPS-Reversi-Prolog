@@ -7,7 +7,7 @@ campAdv(x,o).
 campAdv(o,x).
 vide(-).
 
-ordi(o).
+joueur(x).
 
 succCol(a,b).
 succCol(b,c).
@@ -221,6 +221,13 @@ compteElements([],0).
 compteElements([T|Q],T,N):- compteElements(Q,T,M), N = M+1.
 compteElements([T|Q],Z,N):- compteElements(Q,Z,N).
 
+
+/* Existe dans Liste, vérifie si un élément existe dans une liste */
+
+existeDansListe(ELEMENT,[]):- fail.
+existeDansListe(ELEMENT,[ELEMENT|Q]).
+existeDansListe(ELEMENT,[T|Q]):- existeDansListe(ELEMENT,Q).
+
 /* Fin de Partie, CAMP est gagnant */
 moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
 
@@ -231,4 +238,18 @@ moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N
 moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
-moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L). 
+moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,[]), campAdv(CAMP,ADV), moteur(ARR,ADV). 
+
+/* Partie non terminée, CAMP peut jouer */
+moteur(GRILLE, CAMP):- nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
+    coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
+
+/* Partie non terminée, CAMP peut jouer, Case Invalide */
+moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
+    coordonneesOuListe(C,L,CASE), not(existeDansListe(CASE,LCASES)), moteur(GRILLE,CAMP).
+
+/* Run */
+run():-
+    grilleDepart(Grille),
+    joueur(Camp),
+    moteur(Grille, Camp).
