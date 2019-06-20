@@ -198,17 +198,14 @@ casesAvoisinantes([C,8],[C1,C2,C3,C4,C5]):- succCol(C,D), succCol(B,C), coordonn
 
 casesAvoisinantes([C,L],[C1,C2,C3,C4,C5,C6,C7,C8]):- succLigne(L,M), succLigne(K,L), succCol(C,D), succCol(B,C), coordonneesOuListe(B,K,C1), coordonneesOuListe(C,K,C2), coordonneesOuListe(D,K,C3), coordonneesOuListe(B,L,C4), coordonneesOuListe(D,L,C5), coordonneesOuListe(B,M,C6), coordonneesOuListe(C,M,C7), coordonneesOuListe(D,M,C8).
 
-listeCasesVides([],[]).
-listeCasesVides([Ligne|Grille], ListeFinale):-
-    listeCasesVides(Grille, ListeDep),
-    videDansLigne(Ligne, ListeInter),
-    ListeFinale is [ListeInter|ListeDep].
-
-videDansLigne([], []).
-videDansLigne([[NCol,NLigne]|Ligne], [[NCol,NLigne]|Liste]):-
-    videDansLigne(Ligne, Liste),
-    caseDeGrille(NCol, NLigne, Grille, Case),
-    vide(Case).
+resteCasesVides([Ligne|Grille]):-
+    videDansLigne(Ligne), !;
+    resteCasesVides(Grille).
+    
+videDansLigne([Val|Ligne]):- 
+    vide(Val), !;
+    not(vide(Val)),
+    videDansLigne(Ligne).
 
 /*
 
@@ -229,20 +226,20 @@ existeDansListe(ELEMENT,[ELEMENT|Q]).
 existeDansListe(ELEMENT,[T|Q]):- existeDansListe(ELEMENT,Q).
 
 /* Fin de Partie, CAMP est gagnant */
-moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
 
 /* Fin de Partie, CAMP est perdant */
-moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
 
 /* Fin de Partie, Egalité */
-moteur(GRILLE, CAMP):- listeCasesVides(GRILLE, []), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
 moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,[]), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer */
 moteur(GRILLE, CAMP):- nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
-    coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
+    coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer, Case Invalide */
 moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), nl, write("Camp "), write(Camp), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), saisieUnCoup(C,L), 
