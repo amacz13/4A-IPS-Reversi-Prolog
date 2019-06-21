@@ -1,8 +1,8 @@
 /* Base statique reversi */
 
 /*[g,4]*/
-/*grilleDepart([[-,-,-,-,-,-,-,-],[-,-,x,-,-,-,-,-],[-,o,x,x,x,-,-,-],[-,-,x,o,o,o,-,-],[-,-,x,o,o,-,-,-],[-,-,-,o,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
-grilleDepart([[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).
+grilleDepart([[-,-,-,x,x,x,x,-],[-,-,-,x,x,x,x,-],[x,x,x,x,x,x,x,o],[-,-,x,x,x,x,x,o],[x,x,x,x,x,x,x,o],[-,x,x,x,x,x,x,-],[-,x,x,x,x,-,-,x],[-,x,-,x,x,-,-,-]]).
+/*grilleDepart([[-,-,-,-,-,-,-,-,[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
 pion(x).
 pion(o).
 campAdv(x,o).
@@ -69,7 +69,8 @@ listeCasesJouables(Camp,Grille,[Coup|Liste1],[Coup|Liste2]):-
 listeCasesJouables(Camp,Grille,[Coup|Liste1],Liste2):-
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
 
-/* Vérifie que le coup soit valide
+/* 
+ * Vérifie que le coup soit valide
  * Le coup est considéré valide si la case donnée est vide et si au moins une case à côté est le début d'un alignement de pions
  * du camp adverse se terminant sur un pion de notre propre camp
  */
@@ -241,7 +242,7 @@ moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,
 moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
-moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], campAdv(CAMP,ADV), moteur(ARR,ADV). 
+moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], campAdv(CAMP,ADV), moteur(GRILLE,ADV). 
 
 /* Partie non terminée, CAMP peut jouer */
 moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
