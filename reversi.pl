@@ -1,7 +1,7 @@
 /* Base statique reversi */
 
 /*[g,4]*/
-grilleDepart([[-,x,x,x,x,x,x,-],[-,x,x,x,x,x,x,-],[x,x,o,x,x,x,x,o],[x,o,x,o,o,o,o,o],[x,x,o,x,x,o,x,o],[x,o,x,o,x,o,o,o],[x,x,o,o,o,o,o,o],[x,x,o,o,o,o,o,o]]).
+grilleDepart([[x,o,o,x,o,o,o,o],[x,x,o,x,x,x,x,x],[x,x,x,o,o,x,x,x],[x,x,x,o,o,o,x,x],[x,x,x,o,x,x,o,x],[x,x,x,x,o,o,o,x],[x,x,x,x,x,o,x,x],[x,o,o,o,o,x,x,x]]).
 /*grilleDepart([[-,-,-,-,-,-,-,-,[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
 pion(x).
 pion(o).
@@ -221,9 +221,14 @@ Compte Elements
 Compte le nombre de valeur T dans la grille [T|Q]
 
 */
-compteElements([],0).
+compteElements([],_,0).
 compteElements([T|Q],T,N):- compteElements(Q,T,M), N = M+1.
 compteElements([T|Q],Z,N):- compteElements(Q,Z,N).
+compteElementsGrille([], _, 0).
+compteElementsGrille([Ligne|Grille], Val, N):-
+    compteElementsGrille(Grille, Val, N1), 
+    compteElements(Ligne, Val, N2),
+    N is N1+N2.
 
 
 /* Existe dans Liste, vérifie si un élément existe dans une liste */
@@ -233,13 +238,13 @@ existeDansListe(ELEMENT,[ELEMENT|Q]).
 existeDansListe(ELEMENT,[T|Q]):- existeDansListe(ELEMENT,Q).
 
 /* Fin de Partie, CAMP est gagnant */
-moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
 
 /* Fin de Partie, CAMP est perdant */
-moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
 
 /* Fin de Partie, Egalité */
-moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
 moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], nl, write("Camp "), write(CAMP), write(" ne pas pas jouer !"), campAdv(CAMP,ADV), moteur(GRILLE,ADV). 
