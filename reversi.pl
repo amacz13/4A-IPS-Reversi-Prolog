@@ -1,7 +1,7 @@
 /* Base statique reversi */
 
 /*[g,4]*/
-grilleDepart([[-,-,-,x,x,x,x,-],[-,-,-,x,x,x,x,-],[x,x,x,x,x,x,x,o],[-,-,x,x,x,x,x,o],[x,x,x,x,x,x,x,o],[-,x,x,x,x,x,x,-],[-,x,x,x,x,-,-,x],[-,x,-,x,x,-,-,-]]).
+grilleDepart([[-,x,x,x,x,x,x,-],[-,x,x,x,x,x,x,-],[x,x,o,x,x,x,x,o],[x,o,x,o,o,o,o,o],[x,x,o,x,x,o,x,o],[x,o,x,o,x,o,o,o],[x,x,o,o,o,o,o,o],[x,x,o,o,o,o,o,o]]).
 /*grilleDepart([[-,-,-,-,-,-,-,-,[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
 pion(x).
 pion(o).
@@ -242,7 +242,7 @@ moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,
 moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElements(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
-moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], campAdv(CAMP,ADV), moteur(GRILLE,ADV). 
+moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], nl, write("Camp "), write(CAMP), write(" ne pas pas jouer !"), campAdv(CAMP,ADV), moteur(GRILLE,ADV). 
 
 /* Partie non terminée, CAMP peut jouer */
 moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
