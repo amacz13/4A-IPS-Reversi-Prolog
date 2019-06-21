@@ -68,7 +68,6 @@ caseDeGrille(NCol,NLigne,Grille,Case):-
 listeCasesJouables(_,_,[],[]).
 listeCasesJouables(Camp,Grille,[Coup|Liste1],[Coup|Liste2]):-
     coupValide(Grille, Coup, Camp),
-    nl, write(Coup),
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
 listeCasesJouables(Camp,Grille,[Coup|Liste1],Liste2):-
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
@@ -303,27 +302,6 @@ joueurIA1(Grille, Coup):-
     pion(Camp), not(joueur(Camp)),
     listeCasesJouables(Camp, Grille, CasesDepart, CasesJouables),
     determinerCoupMax(Grille, Camp, CasesJouables, Coup, _).
-joueurIA2(Grille, Coup):-
-    toutesLesCasesDepart(CasesDepart),
-    pion(Camp), not(joueur(Camp)),
-    listeCasesJouables(Camp, Grille, CasesDepart, CasesJouables),
-    determinerEcartCoup(Grille, Camp, CasesJouables, Coup, _).
-
-determinerEcartCoup(_,_,[],[], 0).
-determinerEcartCoup(Grille, Camp, [Coup|ListeCoup], Coup, Ecart):-
-    determinerEcartCoup(Grille, Camp, ListeCoup, _, EcartPrecedent),
-    joueLeCoup(Grille, Coup, Camp, GrilleInter),
-    compteElementsGrille(GrilleInter, Camp, N1),
-    campAdv(Camp, CampAdv), compteElementsGrille(GrilleInter, CampAdv, N2);
-    Ecart is N1 - N2,
-    Ecart >= EcartPrecedent.
-determinerEcartCoup(Grille, Camp, [MauvaisCoup|ListeCoup], Coup, Ecart):-
-    determinerEcartCoup(Grille, Camp, ListeCoup, Coup, EcartPrecedent),
-    joueLeCoup(Grille, MauvaisCoup, Camp, GrilleInter),
-    compteElementsGrille(GrilleInter, Camp, N1),
-    campAdv(Camp, CampAdv), compteElementsGrille(GrilleInter, CampAdv, N2);
-    Ecart is N1 - N2,
-    Ecart < EcartPrecedent.
 
 
 determinerCoupMax(_,_,[],[],0). 
