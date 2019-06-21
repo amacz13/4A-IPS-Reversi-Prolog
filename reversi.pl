@@ -303,16 +303,30 @@ joueurIA1(Grille, Coup):-
     pion(Camp), not(joueur(Camp)),
     listeCasesJouables(Camp, Grille, CasesDepart, CasesJouables),
     determinerCoupMax(Grille, Camp, CasesJouables, Coup, _).
-/*joueurIA2(Grille, Coup):-
+joueurIA2(Grille, Coup):-
     toutesLesCasesDepart(CasesDepart),
     pion(Camp), not(joueur(Camp)),
     listeCasesJouables(Camp, Grille, CasesDepart, CasesJouables),
-    determinerEcartCoup(Grille, Camp, CasesJouables, Coup, _).*/
+    determinerEcartCoup(Grille, Camp, CasesJouables, Coup, _).
+
+determinerEcartCoup(_,_,[],[]).
+determinerEcartCoup(Grille, Camp, [Coup|ListeCoup], Coup, Ecart):-
+    determinerEcartCoup(Grille, Camp, ListeCoup, Coup, EcartPrecedent),
+    joueLeCoup(Grille, Coup, Camp, GrilleInter),
+    compteElementsGrille(GrilleInter, Camp, N1),
+    campAdv(Camp, CampAdv), compteElementsGrille(GrilleInter, CampAdv, N2);
+    Ecart is N1 - N2,
+    Ecart >= EcartPrecedent.
+determinerEcartCoup(Grille, Camp, [MauvaisCoup|ListeCoup], Coup, Ecart):-
+    determinerEcartCoup(Grille, Camp, ListeCoup, Coup, EcartPrecedent),
+    joueLeCoup(Grille, MauvaisCoup, Camp, GrilleInter),
+    compteElementsGrille(GrilleInter, Camp, N1),
+    campAdv(Camp, CampAdv), compteElementsGrille(GrilleInter, CampAdv, N2);
+    Ecart is N1 - N2,
+    Ecart < EcartPrecedent.
 
 
-/*getCoup2*/
-
-determinerCoupMax(GRILLE,CAMP,[],[],0). 
+determinerCoupMax(_,_,[],[],0). 
 determinerCoupMax(GRILLE,CAMP,[T|LISTECOUPS],COUP,N):- determinerCoupMax(GRILLE,CAMP,LISTECOUPS,COUP,N), 
     joueLeCoup(GRILLE,T,CAMP,ARR), compteElementsGrille(GRILLE, CAMP, K), N > K.
 determinerCoupMax(GRILLE,CAMP,[T|LISTECOUPS],T,N):- determinerCoupMax(GRILLE,CAMP,LISTECOUPS,COUP,M), 
