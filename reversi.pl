@@ -271,7 +271,7 @@ moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILL
 
 /* Partie non terminee, Joueur IA peut jouer */
 moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []),
-    not(joueur(CAMP)), joueurIA1(GRILLE,CASE), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), displayScore(ARR),
+    not(joueur(CAMP)), joueurIA2(GRILLE,CASE), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), displayScore(ARR),
     campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminee, Joueur peut jouer */
@@ -309,9 +309,9 @@ joueurIA2(Grille, Coup):-
     listeCasesJouables(Camp, Grille, CasesDepart, CasesJouables),
     determinerEcartCoup(Grille, Camp, CasesJouables, Coup, _).
 
-determinerEcartCoup(_,_,[],[]).
+determinerEcartCoup(_,_,[],[], 0).
 determinerEcartCoup(Grille, Camp, [Coup|ListeCoup], Coup, Ecart):-
-    determinerEcartCoup(Grille, Camp, ListeCoup, Coup, EcartPrecedent),
+    determinerEcartCoup(Grille, Camp, ListeCoup, _, EcartPrecedent),
     joueLeCoup(Grille, Coup, Camp, GrilleInter),
     compteElementsGrille(GrilleInter, Camp, N1),
     campAdv(Camp, CampAdv), compteElementsGrille(GrilleInter, CampAdv, N2);
