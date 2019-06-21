@@ -1,8 +1,8 @@
 /* Base statique reversi */
 
 /*[g,4]*/
-grilleDepart([[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,o,-,-],[-,-,-,x,o,o,-,-],[-,-,-,o,x,o,-,-],[-,-,-,-,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).
-/*grilleDepart([[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
+/*grilleDepart([[-,-,-,-,-,-,-,-],[-,-,x,-,-,-,-,-],[-,o,x,x,x,-,-,-],[-,-,x,o,o,o,-,-],[-,-,x,o,o,-,-,-],[-,-,-,o,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
+grilleDepart([[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).
 pion(x).
 pion(o).
 campAdv(x,o).
@@ -64,6 +64,7 @@ caseDeGrille(NCol,NLigne,Grille,Case):-
 listeCasesJouables(_,_,[],[]).
 listeCasesJouables(Camp,Grille,[Coup|Liste1],[Coup|Liste2]):-
     coupValide(Grille, Coup, Camp),
+    nl, write(Coup),
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
 listeCasesJouables(Camp,Grille,[Coup|Liste1],Liste2):-
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
@@ -153,16 +154,16 @@ getColonneHB([X,Y1], [[X,Y1]|L]):- succLigne(Y1, Y2), getColonneHB([X,Y2], L).
 getColonneBH([X,Y], [[X,Y]]):- not(succLigne(_,Y)).
 getColonneBH([X,Y1], [[X,Y1]|L]):- succLigne(Y2, Y1), getColonneBH([X,Y2], L).
 
-getDiagonaleGDHB([X,Y], [[X,Y]]):- not(succCol(X,_)), not(succLigne(Y,_)).
+getDiagonaleGDHB([X,Y], [[X,Y]]):- not(succCol(X,_)); not(succLigne(Y,_)).
 getDiagonaleGDHB([X1,Y1], [[X1,Y1]|L]):- succLigne(Y1, Y2), succCol(X1, X2), getDiagonaleGDHB([X2,Y2], L).
 
-getDiagonaleGDBH([X,Y], [[X,Y]]):- not(succCol(X,_)), not(succLigne(_,Y)).
+getDiagonaleGDBH([X,Y], [[X,Y]]):- not(succCol(X,_)); not(succLigne(_,Y)).
 getDiagonaleGDBH([X1,Y1], [[X1,Y1]|L]):- succLigne(Y2, Y1), succCol(X1, X2), getDiagonaleGDBH([X2,Y2], L).
 
-getDiagonaleDGHB([X,Y], [[X,Y]]):- not(succCol(_,X)), not(succLigne(Y,_)).
+getDiagonaleDGHB([X,Y], [[X,Y]]):- not(succCol(_,X)); not(succLigne(Y,_)).
 getDiagonaleDGHB([X1,Y1], [[X1,Y1]|L]):- succLigne(Y1, Y2), succCol(X2, X1), getDiagonaleDGHB([X2,Y2], L).
 
-getDiagonaleDGBH([X,Y], [[X,Y]]):- not(succCol(_, X)), not(succLigne(_,Y)).
+getDiagonaleDGBH([X,Y], [[X,Y]]):- not(succCol(_, X)); not(succLigne(_,Y)).
 getDiagonaleDGBH([X1,Y1], [[X1,Y1]|L]):- succLigne(Y2, Y1), succCol(X2, X1), getDiagonaleDGBH([X2,Y2], L).
 
 toutesLesCasesDepart([[a,1],[b,1],[c,1],[d,1],[e,1],[f,1],[g,1],[h,1],[a,2],[b,2],[c,2],[d,2],[e,2],[f,2],[g,2],[h,2],[a,3],[b,3],[c,3],[d,3],[e,3],[f,3],[g,3],[h,3],[a,4],[b,4],[c,4],[d,4],[e,4],[f,4],[g,4],[h,4],[a,5],[b,5],[c,5],[d,5],[e,5],[f,5],[g,5],[h,5],[a,6],[b,6],[c,6],[d,6],[e,6],[f,6],[g,6],[h,6],[a,7],[b,7],[c,7],[d,7],[e,7],[f,7],[g,7],[h,7],[a,8],[b,8],[c,8],[d,8],[e,8],[f,8],[g,8],[h,8]]).
@@ -185,7 +186,7 @@ joueCoupChangeCase(GrilleDepart, GrilleArrivee, [[NCol, NLigne]|ListCases], Coor
     joueCoupChangeCase(GrilleDepart, GrilleInter, ListCases, Coord, Camp),
     caseDeGrille(NCol, NLigne, GrilleInter, CaseCoup), campAdv(CaseCoup, Camp),
     getListeDepl(Coord, [NCol, NLigne], ListeDepl),
-    verifChangementPion(GrilleInter, ListeDepl, Camp),
+    verifChangementPion(GrilleInter, ListeDepl, CaseCoup),
     changerLigne(GrilleInter, GrilleArrivee, ListeDepl, Camp);
 
     joueCoupChangeCase(GrilleDepart, GrilleArrivee, ListCases, Coord, Camp),
@@ -247,8 +248,7 @@ moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer
     coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer, Case Invalide */
-moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
-    coordonneesOuListe(C,L,CASE), not(existeDansListe(CASE,LCASES)), moteur(GRILLE,CAMP).
+moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), moteur(GRILLE,CAMP).
 
 /* Run */
 run():-
