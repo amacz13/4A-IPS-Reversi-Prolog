@@ -29,9 +29,9 @@ succLigne(7,8).
 
 /* Affichage Ligne */
 
-afficheLigne([A,B,C,D,E,F,G,H]):- write(A),write(" | "),write(B),write(" | "),write(C),write(" | "),
+afficheLigne([A,B,C,D,E,F,G,H], N):- write(N), write(" : "), write(A) ,write(" | "),write(B),write(" | "),write(C),write(" | "),
     write(D),write(" | "),write(E),write(" | "),write(F),write(" | "),write(G),write(" | "),write(H).
-afficheGrille([L1,L2,L3,L4,L5,L6,L7,L8]):- nl, afficheLigne(L1), nl, afficheLigne(L2), nl, afficheLigne(L3), nl, afficheLigne(L4), nl, afficheLigne(L5), nl, afficheLigne(L6), nl, afficheLigne(L7), nl, afficheLigne(L8), nl.
+afficheGrille([L1,L2,L3,L4,L5,L6,L7,L8]):- nl, write("# : a | b | c | d | e | f | g | h"), nl, afficheLigne(L1,1), nl, afficheLigne(L2,2), nl, afficheLigne(L3,3), nl, afficheLigne(L4,4), nl, afficheLigne(L5,5), nl, afficheLigne(L6,6), nl, afficheLigne(L7,7), nl, afficheLigne(L8,8), nl.
 
 /* saisie coup */
 
