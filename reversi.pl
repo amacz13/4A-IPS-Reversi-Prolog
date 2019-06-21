@@ -312,9 +312,9 @@ joueurIA1(Grille, Coup):-
 
 /*getCoup2*/
 
-determinerCoupMax(GRILLE,CAMP,[],[],0). 
+determinerCoupMax(_,_,[],[],0). 
 determinerCoupMax(GRILLE,CAMP,[T|LISTECOUPS],COUP,N):- determinerCoupMax(GRILLE,CAMP,LISTECOUPS,COUP,N), 
-    joueLeCoup(GRILLE,T,CAMP,ARR), compteElementsGrille(GRILLE, CAMP, K), N > K.
+    joueLeCoup(GRILLE,T,CAMP,ARR), compteElementsGrille(ARR, CAMP, K), N >= K.
 determinerCoupMax(GRILLE,CAMP,[T|LISTECOUPS],T,N):- determinerCoupMax(GRILLE,CAMP,LISTECOUPS,COUP,M), 
-    joueLeCoup(GRILLE,T,CAMP,ARR), compteElementsGrille(GRILLE, CAMP, N), N > M.
+    joueLeCoup(GRILLE,T,CAMP,ARR), compteElementsGrille(ARR, CAMP, N), N > M.
 
