@@ -1,8 +1,8 @@
 /* Base statique reversi */
 
 /*[g,4]*/
-grilleDepart([[x,o,o,x,o,o,o,o],[x,x,o,x,x,x,x,x],[x,x,x,o,o,x,x,x],[x,x,x,o,o,o,x,x],[x,x,x,o,x,x,o,x],[x,x,x,x,o,o,o,x],[x,x,x,x,x,o,x,x],[x,o,o,o,o,x,x,x]]).
-/*grilleDepart([[-,-,-,-,-,-,-,-,[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).*/
+/*grilleDepart([[x,o,o,x,o,o,o,o],[x,x,o,x,x,x,x,x],[x,x,x,o,o,x,x,x],[x,x,x,o,o,o,x,x],[x,x,x,o,x,x,o,x],[x,x,x,x,o,o,o,x],[x,x,x,x,x,o,x,x],[x,o,o,o,o,x,x,x]]).*/
+grilleDepart([[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,x,o,-,-,-],[-,-,-,o,x,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-],[-,-,-,-,-,-,-,-]]).
 pion(x).
 pion(o).
 campAdv(x,o).
@@ -237,6 +237,8 @@ existeDansListe(ELEMENT,[]):- fail.
 existeDansListe(ELEMENT,[ELEMENT|Q]).
 existeDansListe(ELEMENT,[T|Q]):- existeDansListe(ELEMENT,Q).
 
+displayScore(GRILLE):- compteElementsGrille(GRILLE,x,SCOREX), compteElementsGrille(GRILLE,o,SCOREO), nl, write("x : "), write(SCOREX), write(" | o : "), write(SCOREO), VIDES is 64-(SCOREO+SCOREX), write(" | - : "), write(VIDES).
+
 /* Fin de Partie, CAMP est gagnant */
 moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N > 32, nl, write("Victoire de "), write(CAMP).
 
@@ -251,7 +253,7 @@ moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILL
 
 /* Partie non terminée, CAMP peut jouer */
 moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
-    coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
+    coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), displayScore(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
 /* Partie non terminée, CAMP peut jouer, Case Invalide */
 moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), moteur(GRILLE,CAMP).
