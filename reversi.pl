@@ -43,19 +43,19 @@ saisieUnCoup(COL,LIG):-
 coordonneesOuListe(C,L,[C,L]).
 /*coordonneesOuListe(C,L,[C|L]).*/
 
-/* Récupération d'une case dans une ligne */
+/* Recuperation d'une case dans une ligne */
 caseDeLigne(a, [Case|_], Case).
 caseDeLigne(NCol, [X|Ligne], Case):-
     succCol(NColSuiv,NCol),
     caseDeLigne(NColSuiv,Ligne,Case).
 
-/* Récupération d'une ligne dans une grille */
+/* Recuperation d'une ligne dans une grille */
 ligneDeGrille(1, [Ligne|Grille], Ligne).
 ligneDeGrille(NLigne, [X|Grille], Ligne):-
     succLigne(NLigneSuiv,NLigne),
     ligneDeGrille(NLigneSuiv,Grille,Ligne).
 
-/* Récupération d'une case dans une grille */
+/* Recuperation d'une case dans une grille */
 caseDeGrille(NCol,NLigne,Grille,Case):-
     ligneDeGrille(NLigne, Grille, Ligne),
     caseDeLigne(NCol, Ligne, Case), !.
@@ -70,8 +70,8 @@ listeCasesJouables(Camp,Grille,[Coup|Liste1],Liste2):-
     listeCasesJouables(Camp, Grille, Liste1, Liste2), !.
 
 /* 
- * Vérifie que le coup soit valide
- * Le coup est considéré valide si la case donnée est vide et si au moins une case à côté est le début d'un alignement de pions
+ * Verifie que le coup soit valide
+ * Le coup est considere valide si la case donnee est vide et si au moins une case à côte est le debut d'un alignement de pions
  * du camp adverse se terminant sur un pion de notre propre camp
  */
 coupValide(Grille, Coord, Camp):-
@@ -109,7 +109,7 @@ coupValide(Grille, Coord, Camp):-
 
 
 
-/* Vérifie qu'il y a un changement de camp dans un alignement de pions */
+/* Verifie qu'il y a un changement de camp dans un alignement de pions */
 verifChangementPion(Grille, [X|_], Camp):-
     coordonneesOuListe(NCol, NLigne, X),
     caseDeGrille(NCol, NLigne, Grille, Coup),
@@ -120,7 +120,7 @@ verifChangementPion(Grille, [X|Ligne], Camp):-
     Coup==Camp,
     verifChangementPion(Grille, Ligne, Camp).
 
-/* Change les valeurs des lignes de déplacements données pour le camp donné */
+/* Change les valeurs des lignes de deplacements donnees pour le camp donne */
 changerLigne(GrilleDepart, GrilleDepart, [], Camp).
 changerLigne(GrilleDepart, GrilleDepart, [Coord|_], Camp):- 
     coordonneesOuListe(NCol, NLigne, Coord), caseDeGrille(NCol, NLigne, GrilleDepart, Camp).
@@ -130,7 +130,7 @@ changerLigne(GrilleDepart, GrilleArrivee, [Coord|ListeDepl], Camp):-
     coupJoueDansGrille(NCol, NLigne, Camp, GrilleInter, GrilleArrivee), !.
 
 
-/* Récupère la liste des cases suivant la direction donnée par les deux premières coordonnées */
+/* Recupère la liste des cases suivant la direction donnee par les deux premières coordonnees */
 getListeDepl([X,Y1], [X,Y2], L):-
     succLigne(Y1,Y2), getColonneHB([X,Y2], L);
     succLigne(Y2,Y1), getColonneBH([X,Y2], L).
@@ -228,10 +228,10 @@ compteElementsGrille([], _, 0).
 compteElementsGrille([Ligne|Grille], Val, N):-
     compteElementsGrille(Grille, Val, N1), 
     compteElements(Ligne, Val, N2),
-    N is N1+N2.
+    N is N1+N2, !.
 
 
-/* Existe dans Liste, vérifie si un élément existe dans une liste */
+/* Existe dans Liste, verifie si un element existe dans une liste */
 
 existeDansListe(ELEMENT,[]):- fail.
 existeDansListe(ELEMENT,[ELEMENT|Q]).
@@ -245,18 +245,18 @@ moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE
 /* Fin de Partie, CAMP est perdant */
 moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N < 32, campAdv(CAMP,GAGNANT), nl, write("Victoire de "), write(GAGNANT).
 
-/* Fin de Partie, Egalité */
-moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une égalité !").
+/* Fin de Partie, Egalite */
+moteur(GRILLE, CAMP):- not(resteCasesVides(GRILLE)), compteElementsGrille(GRILLE,CAMP,N), N =:= 32, nl, write("Dommage, c'est une egalite !").
 
 /* Partie non terminée, CAMP ne peut pas jouer */
 moteur(GRILLE, CAMP):- toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,RES), RES = [], nl, write("Camp "), write(CAMP), write(" ne pas pas jouer !"), campAdv(CAMP,ADV), moteur(GRILLE,ADV). 
 
-/* Partie non terminée, CAMP peut jouer */
+/* Partie non terminee, CAMP peut jouer */
 moteur(GRILLE, CAMP):- nl, write("Camp "), write(CAMP), write(", a vous de jouer"), toutesLesCasesDepart(LDEP), listeCasesJouables(CAMP,GRILLE,LDEP,LCASES), not(LCASES = []), saisieUnCoup(C,L), 
     coordonneesOuListe(C,L,CASE), existeDansListe(CASE,LCASES), joueLeCoup(GRILLE, CASE, CAMP, ARR), afficheGrille(ARR), displayScore(ARR), campAdv(CAMP,ADV), moteur(ARR,ADV). 
 
-/* Partie non terminée, CAMP peut jouer, Case Invalide */
-moteur(GRILLE, CAMP):- nl, write("Case invalide, réessayez !"), moteur(GRILLE,CAMP).
+/* Partie non terminee, CAMP peut jouer, Case Invalide */
+moteur(GRILLE, CAMP):- nl, write("Case invalide, reessayez !"), moteur(GRILLE,CAMP).
 
 /* Run */
 run():-
